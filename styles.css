@@ -99,11 +99,11 @@ h1 {
 }
 
 .lead {
-  max-width: 620px;
-  margin-top: 24px;
+  max-width: 560px;
+  margin-top: 22px;
   color: var(--muted);
-  font-size: clamp(1.25rem, 3vw, 1.9rem);
-  line-height: 1.16;
+  font-size: clamp(1.05rem, 2.4vw, 1.42rem);
+  line-height: 1.28;
 }
 
 .byline {
@@ -199,6 +199,12 @@ button:disabled {
   color: rgba(245, 241, 232, 0.48);
   font-size: clamp(0.95rem, 2vw, 1.05rem);
   line-height: 1.65;
+}
+
+.story a {
+  color: rgba(245, 241, 232, 0.68);
+  text-decoration-color: rgba(215, 180, 106, 0.5);
+  text-underline-offset: 3px;
 }
 
 @media (min-width: 820px) {
