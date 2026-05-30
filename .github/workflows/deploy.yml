@@ -63,6 +63,16 @@ jobs:
       - name: Install
         run: npm ci
 
+      - name: Validate deployment secrets
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: |
+          test -n "$VERCEL_TOKEN" || {
+            echo "Missing GitHub secret: VERCEL_TOKEN"
+            echo "Create it in GitHub from a classic Vercel token."
+            exit 1
+          }
+
       - name: Build production
         if: (github.event_name == 'push' && github.ref_name == 'main') || (github.event_name == 'workflow_dispatch' && github.event.inputs.target == 'production')
         run: npx vercel build --prod --yes --token="${{ secrets.VERCEL_TOKEN }}"
