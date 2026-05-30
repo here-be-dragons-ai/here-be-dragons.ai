@@ -10,13 +10,49 @@
     <title>Here be dragons</title>
     <link rel="preload" href="docs/there-be-dragons-1-luma-cover.png" as="image" />
     <link rel="stylesheet" href="styles.css" />
+    <script src="main.js" defer></script>
   </head>
   <body>
-    <main class="page" aria-labelledby="statement">
-      <p id="statement">
-        Here be dragons marks the edge of the known map: an applied AI initiative
-        by Jodok Batlogg.
-      </p>
+    <main class="page">
+      <section class="intro" aria-labelledby="statement">
+        <div class="copy">
+          <p class="kicker">Here be dragons</p>
+          <h1 id="statement">
+            The edge of the known map, for people exploring applied AI.
+          </h1>
+          <p class="byline">An initiative by Jodok Batlogg.</p>
+        </div>
+
+        <form class="contact-form" novalidate>
+          <label>
+            <span>Name <em>optional</em></span>
+            <input type="text" name="name" autocomplete="name" placeholder="Your name" />
+          </label>
+
+          <label>
+            <span>Email</span>
+            <input
+              type="email"
+              name="email"
+              autocomplete="email"
+              placeholder="you@example.com"
+              required
+            />
+          </label>
+
+          <button type="submit">Keep me posted</button>
+          <p class="privacy">No spam. Only occasional updates about the initiative.</p>
+          <p class="form-status" role="status" aria-live="polite"></p>
+        </form>
+      </section>
+
+      <section class="story" aria-label="Meaning of Here be dragons">
+        <p>
+          On old maps, "here be dragons" marked territory not yet understood. This
+          is the same idea, quietly applied to AI: less hype, more careful
+          exploration.
+        </p>
+      </section>
     </main>
   </body>
 </html>
