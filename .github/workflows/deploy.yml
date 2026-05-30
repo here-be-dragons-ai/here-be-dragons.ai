@@ -63,10 +63,18 @@ jobs:
       - name: Install
         run: npm ci
 
+      - name: Build production
+        if: (github.event_name == 'push' && github.ref_name == 'main') || (github.event_name == 'workflow_dispatch' && github.event.inputs.target == 'production')
+        run: npx vercel build --prod --yes --token="${{ secrets.VERCEL_TOKEN }}"
+
+      - name: Build staging
+        if: (github.event_name == 'push' && github.ref_name == 'staging') || (github.event_name == 'workflow_dispatch' && github.event.inputs.target == 'staging')
+        run: npx vercel build --target=preview --yes --token="${{ secrets.VERCEL_TOKEN }}"
+
       - name: Deploy production
         if: (github.event_name == 'push' && github.ref_name == 'main') || (github.event_name == 'workflow_dispatch' && github.event.inputs.target == 'production')
         run: |
-          npx vercel deploy --prod --yes \
+          npx vercel deploy --prebuilt --prod --yes \
             --token="${{ secrets.VERCEL_TOKEN }}" \
             --env AIRTABLE_TOKEN="$AIRTABLE_TOKEN" \
             --env AIRTABLE_BASE_ID="$AIRTABLE_BASE_ID" \
@@ -75,7 +83,7 @@ jobs:
       - name: Deploy staging
         if: (github.event_name == 'push' && github.ref_name == 'staging') || (github.event_name == 'workflow_dispatch' && github.event.inputs.target == 'staging')
         run: |
-          npx vercel deploy --yes --target=preview \
+          npx vercel deploy --prebuilt --yes --target=preview \
             --token="${{ secrets.VERCEL_TOKEN }}" \
             --env AIRTABLE_TOKEN="$AIRTABLE_TOKEN" \
             --env AIRTABLE_BASE_ID="$AIRTABLE_BASE_ID" \
