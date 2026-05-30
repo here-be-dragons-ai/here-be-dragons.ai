@@ -69,6 +69,7 @@ body::after {
 }
 
 .kicker,
+.lead,
 .byline,
 .privacy,
 .form-status {
@@ -90,15 +91,23 @@ body::after {
 h1 {
   max-width: 760px;
   margin: 0;
-  color: var(--muted);
+  color: rgba(245, 241, 232, 0.86);
   font-family: Georgia, "Times New Roman", serif;
-  font-size: clamp(2.5rem, 8vw, 6.2rem);
+  font-size: clamp(4rem, 13vw, 9.4rem);
   font-weight: 400;
-  line-height: 0.98;
+  line-height: 0.88;
+}
+
+.lead {
+  max-width: 620px;
+  margin-top: 24px;
+  color: var(--muted);
+  font-size: clamp(1.25rem, 3vw, 1.9rem);
+  line-height: 1.16;
 }
 
 .byline {
-  margin-top: 22px;
+  margin-top: 18px;
   color: var(--dim);
   font-size: clamp(1rem, 2vw, 1.18rem);
 }
