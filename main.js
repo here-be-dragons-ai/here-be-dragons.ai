@@ -4,8 +4,7 @@ const messages = {
   invalid: "Please enter a valid email address.",
   sending: "Sending...",
   success: "Thanks. You are on the list.",
-  unconfigured:
-    "The form is ready, but Airtable is not connected yet.",
+  unconfigured: "The form is ready, but Airtable is not connected yet.",
   error: "Something went wrong. Please try again later.",
 };
 
@@ -20,7 +19,6 @@ function payloadFromForm() {
   return {
     name: String(formData.get("name") || "").trim(),
     email: String(formData.get("email") || "").trim(),
-    source: "here-be-dragons.ai",
   };
 }
 

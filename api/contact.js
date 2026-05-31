@@ -1,4 +1,7 @@
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const MAX_NAME_LENGTH = 120;
+const MAX_EMAIL_LENGTH = 254;
+const SOURCE = "here-be-dragons.ai";
 
 function sendJson(response, statusCode, payload) {
   response.status(statusCode).json(payload);
@@ -10,14 +13,15 @@ function createSubmittedAt() {
 
 async function contactHandler(request, response) {
   if (request.method !== "POST") {
+    response.setHeader?.("Allow", "POST");
     return sendJson(response, 405, { error: "Method not allowed" });
   }
 
   const payload = request.body || {};
-  const name = String(payload.name || "").trim();
-  const email = String(payload.email || "").trim();
+  const name = String(payload.name || "").trim().slice(0, MAX_NAME_LENGTH);
+  const email = String(payload.email || "").trim().toLowerCase();
 
-  if (!EMAIL_PATTERN.test(email)) {
+  if (email.length > MAX_EMAIL_LENGTH || !EMAIL_PATTERN.test(email)) {
     return sendJson(response, 400, { error: "Invalid email" });
   }
 
@@ -37,36 +41,43 @@ async function contactHandler(request, response) {
     )}`,
   );
 
-  const upstream = await fetch(airtableUrl, {
-    method: "POST",
-    headers: {
-      authorization: `Bearer ${airtableToken}`,
-      "content-type": "application/json",
-    },
-    body: JSON.stringify({
-      records: [
-        {
-          fields: {
-            Name: name,
-            Email: email,
-            Source: "here-be-dragons.ai",
-            SubmittedAt: createSubmittedAt(),
+  try {
+    const upstream = await fetch(airtableUrl, {
+      method: "POST",
+      headers: {
+        authorization: `Bearer ${airtableToken}`,
+        "content-type": "application/json",
+      },
+      body: JSON.stringify({
+        records: [
+          {
+            fields: {
+              Name: name,
+              Email: email,
+              Source: SOURCE,
+              SubmittedAt: createSubmittedAt(),
+            },
           },
-        },
-      ],
-      typecast: true,
-    }),
-  });
+        ],
+        typecast: true,
+      }),
+    });
 
-  if (!upstream.ok) {
+    if (!upstream.ok) {
+      return sendJson(response, 502, {
+        error: "Airtable rejected submission",
+      });
+    }
+
+    const result = await upstream.json();
+
+    return sendJson(response, 200, { ok: true, id: result.records?.[0]?.id });
+  } catch (error) {
+    console.error(error);
     return sendJson(response, 502, {
-      error: "Airtable rejected submission",
+      error: "Airtable request failed",
     });
   }
-
-  const result = await upstream.json();
-
-  return sendJson(response, 200, { ok: true, id: result.records?.[0]?.id });
 }
 
 module.exports = contactHandler;

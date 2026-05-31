@@ -34,8 +34,7 @@ The frontend posts JSON to `/api/contact`:
 ```json
 {
   "name": "Optional name",
-  "email": "person@example.com",
-  "source": "here-be-dragons.ai"
+  "email": "person@example.com"
 }
 ```
 
