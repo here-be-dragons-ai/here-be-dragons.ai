@@ -1,0 +1,5 @@
+{
+  "name": "hbd-contact-worker",
+  "private": true,
+  "type": "module"
+}
