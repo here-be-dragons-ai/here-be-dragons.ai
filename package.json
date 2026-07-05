@@ -1,8 +1,7 @@
 {
   "private": true,
   "scripts": {
-    "build": "echo \"No build step required\"",
-    "check": "node --check main.js && node --check api/contact.js && node --check api/contact.test.js",
-    "test": "node --test"
+    "check": "node --check public/main.js && node --check workers/contact/src/index.js",
+    "test": "node --test workers/contact/test/contact.test.js"
   }
 }
