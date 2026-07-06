@@ -1,0 +1,8 @@
+{
+  "name": "hbd-contact-worker",
+  "private": true,
+  "type": "module",
+  "devDependencies": {
+    "wrangler": "^4.107.0"
+  }
+}

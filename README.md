@@ -1,18 +1,19 @@
 # Here be dragons
 
-Minimal landing page for `here-be-dragons.ai`.
+Landing page for `here-be-dragons.ai`.
 
 ## What It Is
 
-This is a static Vercel site with a small serverless contact endpoint. The page
-collects name and email submissions and stores them in Airtable when the
-required environment variables are configured.
+A dependency-free static site served by GitHub Pages, plus a small Cloudflare
+Worker that receives contact-form submissions and stores them in Airtable.
+
+- `public/` — everything GitHub Pages serves (HTML, CSS, JS, assets)
+- `workers/contact/` — Cloudflare Worker for the contact form
 
 ## Local Development
 
 ```sh
-npm ci
-vercel dev --listen 4173 --yes
+python3 -m http.server 4173 --directory public
 ```
 
 Open `http://localhost:4173`.
@@ -25,11 +26,11 @@ npm test
 ```
 
 `npm run check` validates JavaScript syntax. `npm test` runs the Node tests for
-the contact API.
+the contact Worker.
 
 ## Contact Form
 
-The frontend posts JSON to `/api/contact`:
+The frontend posts JSON to `https://api.here-be-dragons.ai/contact`:
 
 ```json
 {
@@ -38,12 +39,14 @@ The frontend posts JSON to `/api/contact`:
 }
 ```
 
-The Vercel function writes to Airtable using these environment variables:
+The Cloudflare Worker (`workers/contact/`) validates the submission, applies a
+CORS allowlist (`here-be-dragons.ai`, `www.`, `here-be-dragons-ai.github.io`),
+and writes to Airtable using these Worker secrets/vars:
 
 ```sh
-AIRTABLE_TOKEN=
-AIRTABLE_BASE_ID=
-AIRTABLE_TABLE_NAME=Contacts
+AIRTABLE_TOKEN=       # secret: cf workers secrets update AIRTABLE_TOKEN --script-name hbd-contact --text ...
+AIRTABLE_BASE_ID=     # secret: cf workers secrets update AIRTABLE_BASE_ID --script-name hbd-contact --text ...
+AIRTABLE_TABLE_NAME=Contacts   # text binding, set in cloudflare.config.ts
 ```
 
 Expected Airtable fields:
@@ -53,28 +56,28 @@ Expected Airtable fields:
 - `Source`
 - `SubmittedAt`
 
-If Airtable credentials are missing, the API returns `501` and the frontend
-shows a configuration message instead of making any external request.
+If Airtable credentials are missing, the Worker returns `501` without making
+any external request.
 
-## Deployment
+### Worker deployment
 
-Deployments run through GitHub Actions:
+Uses the Cloudflare CLI (`cf`, authenticated via `cf auth login`):
 
-- Push to `main` deploys production.
-- Push to `staging` deploys a Vercel preview.
-- `workflow_dispatch` can deploy either target manually.
+```sh
+cd workers/contact
+cf deploy
+```
 
-Required GitHub secrets:
+The Worker is configured in `cloudflare.config.ts` and served on the custom
+domain `api.here-be-dragons.ai` (attached by Cloudflare, no DNS record needed)
+plus `hbd-contact.btlg.workers.dev`.
 
-- `VERCEL_TOKEN`
-- `VERCEL_ORG_ID`
-- `VERCEL_PROJECT_ID`
-- `AIRTABLE_TOKEN`
-- `AIRTABLE_BASE_ID`
+## Site Deployment
 
-Optional GitHub variable:
-
-- `AIRTABLE_TABLE_NAME`
+Pushes to `main` deploy to GitHub Pages via `.github/workflows/deploy.yml`
+(test job, then `actions/deploy-pages`). The custom domain
+`here-be-dragons.ai` is configured in the repository's Pages settings; DNS for
+apex and `www` lives on Cloudflare and points at GitHub Pages.
 
 ## Social And Crawlers
 
@@ -87,4 +90,6 @@ The site includes:
 - Open Graph tags
 - Twitter Card tags
 
-The social preview image currently uses `docs/there-be-dragons-1-luma-cover.png`.
+The social preview image is `public/docs/there-be-dragons-1-luma-cover.png`
+(served as `/docs/there-be-dragons-1-luma-cover.png`); the same image is the
+hero background.

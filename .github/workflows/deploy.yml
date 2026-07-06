@@ -1,20 +1,18 @@
-name: Deploy
+name: Deploy to GitHub Pages
 
 on:
   push:
     branches:
       - main
-      - staging
+  pull_request:
   workflow_dispatch:
-    inputs:
-      target:
-        description: "Deployment target"
-        required: true
-        default: "staging"
-        type: choice
-        options:
-          - staging
-          - production
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
 
 jobs:
   test:
@@ -28,10 +26,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: npm
-
-      - name: Install
-        run: npm ci
 
       - name: Check
         run: npm run check
@@ -40,61 +34,29 @@ jobs:
         run: npm test
 
   deploy:
-    name: Deploy to Vercel
+    name: Deploy
+    if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     needs: test
-    environment: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.target || (github.ref_name == 'main' && 'production' || 'staging') }}
-    env:
-      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-      AIRTABLE_TOKEN: ${{ secrets.AIRTABLE_TOKEN }}
-      AIRTABLE_BASE_ID: ${{ secrets.AIRTABLE_BASE_ID }}
-      AIRTABLE_TABLE_NAME: ${{ vars.AIRTABLE_TABLE_NAME || 'Contacts' }}
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Node
-        uses: actions/setup-node@v4
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload site
+        uses: actions/upload-pages-artifact@v3
         with:
-          node-version: 22
-          cache: npm
+          path: public
 
-      - name: Install
-        run: npm ci
-
-      - name: Validate deployment secrets
-        env:
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-        run: |
-          test -n "$VERCEL_TOKEN" || {
-            echo "Missing GitHub secret: VERCEL_TOKEN"
-            echo "Create it in GitHub from a classic Vercel token."
-            exit 1
-          }
-
-      - name: Build production
-        if: (github.event_name == 'push' && github.ref_name == 'main') || (github.event_name == 'workflow_dispatch' && github.event.inputs.target == 'production')
-        run: npx vercel build --prod --yes --token="${{ secrets.VERCEL_TOKEN }}"
-
-      - name: Build staging
-        if: (github.event_name == 'push' && github.ref_name == 'staging') || (github.event_name == 'workflow_dispatch' && github.event.inputs.target == 'staging')
-        run: npx vercel build --target=preview --yes --token="${{ secrets.VERCEL_TOKEN }}"
-
-      - name: Deploy production
-        if: (github.event_name == 'push' && github.ref_name == 'main') || (github.event_name == 'workflow_dispatch' && github.event.inputs.target == 'production')
-        run: |
-          npx vercel deploy --prebuilt --prod --yes \
-            --token="${{ secrets.VERCEL_TOKEN }}" \
-            --env AIRTABLE_TOKEN="$AIRTABLE_TOKEN" \
-            --env AIRTABLE_BASE_ID="$AIRTABLE_BASE_ID" \
-            --env AIRTABLE_TABLE_NAME="$AIRTABLE_TABLE_NAME"
-
-      - name: Deploy staging
-        if: (github.event_name == 'push' && github.ref_name == 'staging') || (github.event_name == 'workflow_dispatch' && github.event.inputs.target == 'staging')
-        run: |
-          npx vercel deploy --prebuilt --yes --target=preview \
-            --token="${{ secrets.VERCEL_TOKEN }}" \
-            --env AIRTABLE_TOKEN="$AIRTABLE_TOKEN" \
-            --env AIRTABLE_BASE_ID="$AIRTABLE_BASE_ID" \
-            --env AIRTABLE_TABLE_NAME="$AIRTABLE_TABLE_NAME"
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
