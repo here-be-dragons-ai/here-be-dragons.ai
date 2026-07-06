@@ -44,9 +44,9 @@ CORS allowlist (`here-be-dragons.ai`, `www.`, `here-be-dragons-ai.github.io`),
 and writes to Airtable using these Worker secrets/vars:
 
 ```sh
-AIRTABLE_TOKEN=       # secret: npx wrangler secret put AIRTABLE_TOKEN
-AIRTABLE_BASE_ID=     # secret: npx wrangler secret put AIRTABLE_BASE_ID
-AIRTABLE_TABLE_NAME=Contacts   # var, set in wrangler.toml
+AIRTABLE_TOKEN=       # secret: cf workers secrets update AIRTABLE_TOKEN --script-name hbd-contact --text ...
+AIRTABLE_BASE_ID=     # secret: cf workers secrets update AIRTABLE_BASE_ID --script-name hbd-contact --text ...
+AIRTABLE_TABLE_NAME=Contacts   # text binding, set in cloudflare.config.ts
 ```
 
 Expected Airtable fields:
@@ -61,13 +61,16 @@ any external request.
 
 ### Worker deployment
 
+Uses the Cloudflare CLI (`cf`, authenticated via `cf auth login`):
+
 ```sh
 cd workers/contact
-npx wrangler deploy
+cf deploy
 ```
 
-The Worker is routed to the custom domain `api.here-be-dragons.ai` (configured
-in `wrangler.toml`; Cloudflare manages the DNS record automatically).
+The Worker is configured in `cloudflare.config.ts` and served on the custom
+domain `api.here-be-dragons.ai` (attached by Cloudflare, no DNS record needed)
+plus `hbd-contact.btlg.workers.dev`.
 
 ## Site Deployment
 

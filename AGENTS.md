@@ -7,7 +7,7 @@ Guidance for coding agents working in this repository.
 - Static site served by GitHub Pages: `public/` (`index.html`, `styles.css`,
   `main.js`, assets)
 - Contact endpoint: Cloudflare Worker in `workers/contact/`
-  (`src/index.js`, tests in `test/`, config in `wrangler.toml`)
+  (`src/index.js`, tests in `test/`, config in `cloudflare.config.ts`)
 - Deployment workflow: `.github/workflows/deploy.yml` (GitHub Pages)
 - Visual asset: `public/docs/there-be-dragons-1-luma-cover.png` (hero image
   and social preview — keep the `/docs/...` URL stable)
@@ -39,7 +39,8 @@ python3 -m http.server 4173 --directory public
 ## Deployment
 
 Pushes to `main` deploy to GitHub Pages through GitHub Actions. The Worker is
-deployed manually with `npx wrangler deploy` from `workers/contact/`.
+deployed manually with `cf deploy` from `workers/contact/` (use the `cf` CLI
+for all Cloudflare operations — Workers, secrets, DNS).
 
 ## Form Integration
 
