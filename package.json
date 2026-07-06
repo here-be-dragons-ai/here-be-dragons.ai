@@ -3,6 +3,6 @@
   "scripts": {
     "dev": "node scripts/serve.mjs",
     "check": "node --check public/main.js && node --check workers/contact/src/index.js && node --check scripts/serve.mjs",
-    "test": "node --test workers/contact/test/contact.test.js"
+    "test": "node --test workers/contact/test/contact.test.js scripts/serve.test.mjs"
   }
 }
