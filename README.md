@@ -13,10 +13,12 @@ Worker that receives contact-form submissions and stores them in Airtable.
 ## Local Development
 
 ```sh
-python3 -m http.server 4173 --directory public
+npm run dev
 ```
 
-Open `http://localhost:4173`.
+Open `http://localhost:4173`. The contact form works locally too —
+`http://localhost:4173` is on the Worker's CORS allowlist (submissions go to
+the production Worker, so use test data).
 
 ## Checks
 
@@ -61,16 +63,22 @@ any external request.
 
 ### Worker deployment
 
-Uses the Cloudflare CLI (`cf`, authenticated via `cf auth login`):
+Deploys run automatically through [Workers Builds](https://developers.cloudflare.com/workers/ci-cd/builds/)
+(Cloudflare's GitHub integration): pushes to `main` touching
+`workers/contact/**` run `npx wrangler deploy --experimental-new-config` from
+`workers/contact/`; other branches upload a preview version. The
+`--experimental-new-config` flag is required because the Worker is configured
+via `cloudflare.config.ts` (new config format).
+
+Manual deploys still work with the Cloudflare CLI:
 
 ```sh
 cd workers/contact
 cf deploy
 ```
 
-The Worker is configured in `cloudflare.config.ts` and served on the custom
-domain `api.here-be-dragons.ai` (attached by Cloudflare, no DNS record needed)
-plus `hbd-contact.btlg.workers.dev`.
+The Worker is served on the custom domain `api.here-be-dragons.ai` (attached
+by Cloudflare, no DNS record needed) plus `hbd-contact.btlg.workers.dev`.
 
 ## Site Deployment
 

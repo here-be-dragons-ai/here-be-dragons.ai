@@ -33,14 +33,16 @@ npm test
 For visual changes, verify locally with:
 
 ```sh
-python3 -m http.server 4173 --directory public
+npm run dev
 ```
 
 ## Deployment
 
-Pushes to `main` deploy to GitHub Pages through GitHub Actions. The Worker is
-deployed manually with `cf deploy` from `workers/contact/` (use the `cf` CLI
-for all Cloudflare operations — Workers, secrets, DNS).
+Pushes to `main` deploy to GitHub Pages through GitHub Actions. The Worker
+deploys automatically via Cloudflare Workers Builds when `workers/contact/**`
+changes on `main` (command: `npx wrangler deploy --experimental-new-config`);
+manual deploys use `cf deploy` from `workers/contact/` (use the `cf` CLI for
+all Cloudflare operations — Workers, secrets, DNS).
 
 ## Form Integration
 
