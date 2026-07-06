@@ -7,8 +7,11 @@ export default defineWorker({
   domains: ["api.here-be-dragons.ai"],
   workersDev: true,
   env: {
-    // Secrets AIRTABLE_TOKEN and AIRTABLE_BASE_ID are managed out of band:
-    //   cf workers secrets update <NAME> --script-name hbd-contact --body '...'
+    // Secret values are set out of band (cf workers secrets update <NAME>
+    // --script-name hbd-contact --text ...); declaring them here makes
+    // deploys inherit the stored values instead of dropping them.
+    AIRTABLE_TOKEN: { type: "secret" },
+    AIRTABLE_BASE_ID: { type: "secret" },
     AIRTABLE_TABLE_NAME: { type: "text", value: "Contacts" },
   },
 });
