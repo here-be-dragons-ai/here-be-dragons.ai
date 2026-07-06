@@ -7,6 +7,8 @@ const ALLOWED_ORIGINS = new Set([
   "https://here-be-dragons.ai",
   "https://www.here-be-dragons.ai",
   "https://here-be-dragons-ai.github.io",
+  // Local development (npm run dev)
+  "http://localhost:4173",
 ]);
 
 function corsHeaders(request) {
