@@ -51,6 +51,41 @@ test("does not echo CORS headers for unknown origins", async () => {
   assert.equal(response.headers.get("Access-Control-Allow-Origin"), null);
 });
 
+test("rejects POSTs from disallowed origins", async () => {
+  const response = await handleRequest(
+    contactRequest({
+      body: { email: "hello@example.com" },
+      origin: "https://evil.example",
+    }),
+    CONFIGURED_ENV,
+  );
+
+  assert.equal(response.status, 403);
+  assert.deepEqual(await response.json(), { error: "Origin not allowed" });
+});
+
+test("accepts requests without an Origin header", async () => {
+  const fetchImpl = async () => airtableOk();
+
+  const response = await handleRequest(
+    contactRequest({ body: { email: "hello@example.com" }, origin: null }),
+    CONFIGURED_ENV,
+    fetchImpl,
+  );
+
+  assert.equal(response.status, 200);
+});
+
+test("rejects a JSON null body with 400", async () => {
+  const response = await handleRequest(
+    contactRequest({ body: null }),
+    CONFIGURED_ENV,
+  );
+
+  assert.equal(response.status, 400);
+  assert.deepEqual(await response.json(), { error: "Invalid JSON body" });
+});
+
 test("rejects non-POST requests", async () => {
   const response = await handleRequest(contactRequest({ method: "GET" }), {});
 

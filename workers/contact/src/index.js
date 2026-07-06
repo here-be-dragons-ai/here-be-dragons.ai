@@ -44,6 +44,10 @@ async function handleContact(request, env, fetchImpl) {
     return jsonResponse(request, 400, { error: "Invalid JSON body" });
   }
 
+  if (payload === null || typeof payload !== "object") {
+    return jsonResponse(request, 400, { error: "Invalid JSON body" });
+  }
+
   const name = String(payload.name || "").trim().slice(0, MAX_NAME_LENGTH);
   const email = String(payload.email || "").trim().toLowerCase();
 
@@ -106,6 +110,15 @@ async function handleContact(request, env, fetchImpl) {
 export async function handleRequest(request, env, fetchImpl = fetch) {
   if (request.method === "OPTIONS") {
     return new Response(null, { status: 204, headers: corsHeaders(request) });
+  }
+
+  // Browsers always send Origin on cross-origin (and same-origin POST)
+  // requests; reject disallowed origins outright instead of only omitting
+  // CORS headers. Requests without Origin (curl, server-side) pass through.
+  const origin = request.headers.get("Origin");
+
+  if (origin && !ALLOWED_ORIGINS.has(origin)) {
+    return jsonResponse(request, 403, { error: "Origin not allowed" });
   }
 
   if (request.method !== "POST") {
