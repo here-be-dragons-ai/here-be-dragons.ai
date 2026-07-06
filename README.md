@@ -42,7 +42,8 @@ The frontend posts JSON to `https://api.here-be-dragons.ai/contact`:
 ```
 
 The Cloudflare Worker (`workers/contact/`) validates the submission, applies a
-CORS allowlist (`here-be-dragons.ai`, `www.`, `here-be-dragons-ai.github.io`),
+CORS allowlist (`here-be-dragons.ai`, `www.`, `here-be-dragons-ai.github.io`,
+`localhost:4173` for local dev),
 and writes to Airtable using these Worker secrets/vars:
 
 ```sh
