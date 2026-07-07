@@ -8,6 +8,10 @@ Guidance for coding agents working in this repository.
   `main.js`, assets)
 - Contact endpoint: Cloudflare Worker in `workers/contact/`
   (`src/index.js`, tests in `test/`, config in `cloudflare.config.ts`)
+- Staging: Cloudflare Worker in `workers/staging-site/` serving `public/` as
+  static assets behind Basic Auth at https://staging.here-be-dragons.ai;
+  non-`main` pushes touching `public/**` or `workers/staging-site/**`
+  auto-deploy it — review changes there before merging
 - Deployment workflow: `.github/workflows/deploy.yml` (GitHub Pages)
 - Visual asset: `public/docs/there-be-dragons-1-luma-cover.png` (hero image
   and social preview — keep the `/docs/...` URL stable)

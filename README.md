@@ -81,6 +81,20 @@ cf deploy
 The Worker is served on the custom domain `api.here-be-dragons.ai` (attached
 by Cloudflare, no DNS record needed) plus `hbd-contact.btlg.workers.dev`.
 
+## Staging
+
+https://staging.here-be-dragons.ai serves the site behind HTTP Basic Auth
+(any username; the password lives as the `STAGING_PASSWORD` secret on the
+`hbd-staging` Worker). Every push to a non-`main` branch that touches
+`public/**` or `workers/staging-site/**` redeploys staging via Workers Builds
+(last push wins); merges to `main` re-sync it with production.
+
+Change the password with:
+
+```sh
+cf workers secrets update STAGING_PASSWORD --script-name hbd-staging --text '<new password>'
+```
+
 ## Site Deployment
 
 Pushes to `main` deploy to GitHub Pages via `.github/workflows/deploy.yml`
