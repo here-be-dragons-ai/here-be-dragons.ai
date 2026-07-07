@@ -1,1 +1,0 @@
-{"name":"hbd-staging","compatibilityDate":"2026-07-01","assets":{"htmlHandling":"auto-trailing-slash","notFoundHandling":"404-page","runWorkerFirst":true},"domains":["staging.here-be-dragons.ai"],"workersDev":false,"env":{"ASSETS":{"type":"assets"},"STAGING_PASSWORD":{"type":"secret"}},"manifest":{"mainModule":"index.js","modules":{"index.js":{"type":"esm"}}}}

@@ -1,4 +1,0 @@
-User-agent: *
-Allow: /
-
-Sitemap: https://here-be-dragons.ai/sitemap.xml

@@ -4,4 +4,4 @@
 node_modules
 
 .DS_Store
-workers/contact/.cloudflare/
+workers/*/.cloudflare/
